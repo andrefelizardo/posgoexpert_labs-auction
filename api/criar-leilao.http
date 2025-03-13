@@ -1,0 +1,9 @@
+POST http://localhost:8080/auction
+Content-Type: application/json
+
+{
+  "product_name": "Dell G3",
+  "category": "Eletronicos",
+  "description": "Novo Notebook Dell",
+  "condition": 1
+}

@@ -1,0 +1,2 @@
+GET http://localhost:8080/auction/56ecf39a-0963-47e0-b954-43deabd7a61d
+Content-Type: application/json
