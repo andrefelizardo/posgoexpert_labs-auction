@@ -4,10 +4,11 @@ import (
 	"context"
 	"fullcycle-auction_go/configuration/rest_err"
 	"fullcycle-auction_go/internal/usecase/auction_usecase"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func (u *AuctionController) FindAuctionById(c *gin.Context) {
@@ -38,15 +39,21 @@ func (u *AuctionController) FindAuctions(c *gin.Context) {
 	category := c.Query("category")
 	productName := c.Query("productName")
 
-	statusNumber, errConv := strconv.Atoi(status)
-	if errConv != nil {
-		errRest := rest_err.NewBadRequestError("Error trying to validate auction status param")
-		c.JSON(errRest.Code, errRest)
-		return
+	var statusNumber int
+	if status == "" {
+		// Se não for informado, assume valor default Active (0)
+		statusNumber = 0
+	} else {
+		var errConv error
+		statusNumber, errConv = strconv.Atoi(status)
+		if errConv != nil {
+			errRest := rest_err.NewBadRequestError("Error trying to validate auction status param")
+			c.JSON(errRest.Code, errRest)
+			return
+		}
 	}
 
-	auctions, err := u.auctionUseCase.FindAuctions(context.Background(),
-		auction_usecase.AuctionStatus(statusNumber), category, productName)
+	auctions, err := u.auctionUseCase.FindAuctions(c, auction_usecase.AuctionStatus(statusNumber), category, productName)
 	if err != nil {
 		errRest := rest_err.ConvertError(err)
 		c.JSON(errRest.Code, errRest)
